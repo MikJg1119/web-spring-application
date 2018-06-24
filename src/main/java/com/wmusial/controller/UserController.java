@@ -25,7 +25,7 @@ public class UserController {
 
         List<User> users ;
                 if (search != null){
-            users=userRepository.search(search);
+            users=userRepository.search("%"+search+"%");
                 }else {
             users = userRepository.findAll();
                 }
