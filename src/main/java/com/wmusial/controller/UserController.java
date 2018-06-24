@@ -21,9 +21,14 @@ public class UserController {
     private UserRepository userRepository;
 
     @RequestMapping(value = "/users", method=RequestMethod.GET)
-    public String showUsers(Model model){
+    public String showUsers(Model model, @RequestParam(required=false) String search){
 
-        List<User> users = userRepository.findAll();
+        List<User> users ;
+                if (search != null){
+            users=userRepository.search(search);
+                }else {
+            users = userRepository.findAll();
+                }
         model.addAttribute("usersList", users);
 
 
@@ -34,9 +39,9 @@ public class UserController {
         return "formularz";
     }
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
-    public String createUser(@RequestParam(name="imie") String firstName, @RequestParam(name="nazwisko") String lastName, @RequestParam String email){
+    public String createUser(@RequestParam(name="imie") String firstName, @RequestParam(name="nazwisko") String lastName, @RequestParam String email, @RequestParam(required = false) String avatarUrl){
 
-        User user = new User(firstName, lastName, email);
+        User user = new User(firstName, lastName, email, avatarUrl);
 
         userRepository.save(user);
         return "redirect:/users";
@@ -50,8 +55,8 @@ public class UserController {
         return "formularz-edycji";
     }
     @RequestMapping(value = "/users/update", method = RequestMethod.POST)
-    public String editUser(@RequestParam Long id, @RequestParam(name="imie") String firstName, @RequestParam(name="nazwisko") String lastName, @RequestParam String email){
-        User user = new User(id, firstName, lastName, email);
+    public String editUser(@RequestParam Long id, @RequestParam(name="imie") String firstName, @RequestParam(name="nazwisko") String lastName, @RequestParam String email, @RequestParam(required = false) String avatarUrl){
+        User user = new User(id, firstName, lastName, email, avatarUrl);
 
         userRepository.save(user);
         return "redirect:/users";
@@ -62,5 +67,13 @@ public class UserController {
         userRepository.delete(id);
         return "redirect:/users";
     }
+    @RequestMapping(value = "/users-tiles", method=RequestMethod.GET)
+    public String showUsersTiles(Model model){
 
+        List<User> users = userRepository.findAll();
+        model.addAttribute("usersList", users);
+
+
+        return "users-tiles";
+    }
 }
